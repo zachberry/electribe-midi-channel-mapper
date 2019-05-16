@@ -13,6 +13,11 @@ Adafruit_7segment matrix = Adafruit_7segment();
 // Button
 #define BUTTON_PIN 2
 
+// EEPROM
+#define EEPROM_ADDR_SOFTWARE_VERSION = 0
+#define EEPROM_ADDR_CHANNEL_MAP = 1
+#define SOFTWARE_VERSION = 1
+
 #define DEBUG true
 
 MIDI_CREATE_DEFAULT_INSTANCE();
@@ -61,9 +66,11 @@ bool is_out_pot_dirty = false;
 // if a MIDI message is being recieved on ANY midi channel. Otherwise, the ACTIVE CHANNEL
 // INDICATOR will display if the current INPUT CHANNEL displayed is getting midi messages.
 
+#define DEFAULT_CHANNEL_MAP = {MIDI_CHANNEL_OFF, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+
 // Array to hold inputs and outputs.  Index is input channel, value is output channel.
 // 0 = No output, 1 = Midi Channel 1, ..., 16 = Midi Channel 16
-byte channel_map[17] = {MIDI_CHANNEL_OFF, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16};
+byte channel_map[17] = getChannelMapFromEEPROM()
 
 // Array to keep track of which channels are active. We use this information to display
 // a dot in the LED display next to the input channel (so the user can see visually
@@ -347,6 +354,7 @@ void displayRight(int val, bool dot)
 void updateChannels()
 {
   channel_map[in_pot_channel] = out_pot_channel;
+  writeCurrentChannelMapToEEPROM();
 }
 
 void markChannelAsActive(channel)
@@ -379,4 +387,30 @@ void resetActiveStateForAllChannels()
   active_map[14] = false;
   active_map[15] = false;
   active_map[16] = false;
+}
+
+void reset() {
+  initEEPROM()
+  channel_map = getChannelMapFromEEPROM()
+}
+
+void initEEPROM()
+{
+  EEPROM.put(EEPROM_ADDR_SOFTWARE_VERSION, SOFTWARE_VERSION)
+  EEPROM.put(EEPROM_ADDR_CHANNEL_MAP, DEFAULT_CHANNEL_MAP);
+}
+
+void writeCurrentChannelMapToEEPROM()
+{
+  EEPROM.put(EEPROM_ADDR_CHANNEL_MAP, channel_map);
+}
+
+void getChannelMapFromEEPROM()
+{
+  byte software_version = EEPROM.get(EEPROM_ADDR_SOFTWARE_VERSION)
+  if(software_version != SOFTWARE_VERSION) {
+    initEEPROM()
+  }
+
+  return EEPROM.get(EEPROM_ADDR_CHANNEL_MAP)
 }
