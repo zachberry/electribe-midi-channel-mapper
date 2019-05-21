@@ -13,8 +13,9 @@ public:
 	static byte inputChannel = 0;
 	static byte outputChannel = 0;
 
-	static void init()
+	static void init(byte channelMap)
 	{
+		channel_map = channelMap;
 	}
 
 	static bool isOMNIMode()

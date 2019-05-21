@@ -1,4 +1,3 @@
-#include <EEPROM.h>
 #include <Wire.h> // Enable this line if using Arduino Uno, Mega, etc.
 
 #include "_midi_handler.h"
@@ -27,10 +26,6 @@ byte last_in_pot_channel = 0;
 byte last_out_pot_channel = 0;
 bool is_out_pot_dirty = false;
 
-// EEPROM Addresses
-#define VERSION_ADDR 0	 // value of 1 if memory has been initialized
-#define CHANNEL_MAP_ADDR 1 // 1 - 17
-
 // Stuff that only runs every so often
 #define LOOP_DELAY 500
 int loop_ticks = 0;
@@ -47,20 +42,8 @@ void setup()
 	pinMode(BUTTON_PIN, INPUT_PULLUP);
 	button_state = digitalRead(BUTTON_PIN);
 
-	// Load saved data from EEPROM if it has been initialized
-	byte versionNum = EEPROM.read(VERSION_ADDR);
-	if ((versionNum == SOFTWARE_VERSION) && (button_state == HIGH))
-	{
-		EEPROM.get(CHANNEL_MAP_ADDR, channel_map);
-	}
-	// Otherwise, initialize the EEPROM
-	else
-	{
-		EEPROM.put(CHANNEL_MAP_ADDR, channel_map);
-
-		// Set the initialized flag
-		EEPROM.write(VERSION_ADDR, 1);
-	}
+	byte channelMap = EEPROM.init(SOFTWARE_VERSION, defaultChannelMap, button_state == LOW);
+	ChannelMap::init(channelMap);
 
 	LCD::displayZeros();
 
