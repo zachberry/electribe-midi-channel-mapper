@@ -21,9 +21,10 @@ Adafruit_7segment matrix = Adafruit_7segment();
 #define TOTAL_POT_STEPS 17
 #define CHAN_IN_POT 2
 #define CHAN_OUT_POT 3
-float EMA_a = 0.6;      //initialization of EMA alpha
-int EMA_S_in = 0;       //initialization of EMA S for input channel
-int EMA_S_out = 0;      //initialization of EMA S for output channel
+
+float EMA_a = 0.6; //initialization of EMA alpha
+int EMA_S_in = 0;  //initialization of EMA S for input channel
+int EMA_S_out = 0; //initialization of EMA S for output channel
 
 #define DEBUG true
 
@@ -45,7 +46,7 @@ byte channel_map[17] = {MIDI_CHANNEL_OFF, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
 bool active_map[17] = {false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false, false};
 
 // EEPROM Addresses
-#define VERSION_ADDR 0 // value of 1 if memory has been initialized
+#define VERSION_ADDR 0     // value of 1 if memory has been initialized
 #define CHANNEL_MAP_ADDR 1 // 1 - 17
 
 // Stuff that only runs every so often
@@ -61,7 +62,7 @@ void setup()
   // Save Button
   pinMode(BUTTON_PIN, INPUT_PULLUP);
   button_state = digitalRead(BUTTON_PIN);
-  
+
   // Load saved data from EEPROM if it has been initialized
   byte versionNum = EEPROM.read(VERSION_ADDR);
   if ((versionNum == SOFTWARE_VERSION) && (button_state == HIGH))
@@ -87,9 +88,9 @@ void setup()
   matrix.writeDisplay();
 
   int counter = 0;
-  while(button_state == LOW)
+  while (button_state == LOW)
   {
-    if(counter > (DISABLE_OUTPUTS_DELAY * 10))
+    if (counter > (DISABLE_OUTPUTS_DELAY * 10))
     {
       matrix.writeDigitRaw(0, MATRIX_DASH);
       matrix.writeDigitRaw(1, MATRIX_DASH);
@@ -106,13 +107,13 @@ void setup()
   }
 
   // If the user held the button long enough, disable all channels
-  if(counter > (DISABLE_OUTPUTS_DELAY * 10))
+  if (counter > (DISABLE_OUTPUTS_DELAY * 10))
   {
     disableAllChannels();
   }
-  
+
   // Display Zeroes
-  
+
   matrix.setBrightness(1);
   matrix.writeDigitNum(0, 0, false);
   matrix.writeDigitNum(1, 0, false);
@@ -334,9 +335,9 @@ int normalizePotInput(float rawIn, bool zeroIndex)
   return out;
 }
 
-int emaSmooth(int sensorValue, int* EMA_S)
+int emaSmooth(int sensorValue, int *EMA_S)
 {
-  *EMA_S = (EMA_a*sensorValue) + ((1-EMA_a) * (*EMA_S));
+  *EMA_S = (EMA_a * sensorValue) + ((1 - EMA_a) * (*EMA_S));
   return *EMA_S;
 }
 
@@ -350,7 +351,7 @@ void displayChannels()
 
   // Display the colons if in omni mode to indicate locked outputs
   matrix.drawColon(isOmni);
-  
+
   // We display the left dot if we got a MIDI message on that channel:
   displayLeft(in_pot_channel, isChannelActive(in_pot_channel));
 
@@ -406,7 +407,7 @@ void displayRight(int val, bool dot)
     }
     matrix.writeDigitNum(4, val % 10, dot);
   }
-  
+
   matrix.writeDisplay();
 }
 
@@ -417,10 +418,9 @@ void updateChannels()
   {
     channel_map[in_pot_channel] = out_pot_channel;
     EEPROM.write(CHANNEL_MAP_ADDR + in_pot_channel, out_pot_channel);
-    
+
     is_out_pot_dirty = false;
   }
-  
 }
 
 void disableAllChannels()
@@ -448,7 +448,7 @@ void disableAllChannels()
 void markChannelAsActive(byte channel)
 {
   active_map[MIDI_CHANNEL_OMNI] = true;
-  
+
   active_map[channel] = true;
 }
 
