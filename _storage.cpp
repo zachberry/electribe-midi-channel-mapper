@@ -15,7 +15,7 @@ private:
 	}
 
 public:
-	static byte[] init(softwareVersion, defaultChannelMap, forceReset = false)
+	static void init(softwareVersion, defaultChannelMap, forceReset = false)
 	{
 		byte _softwareVersion = softwareVersion;
 		bool isEEPROMValid = getVersionNum() == _softwareVersion;
@@ -24,14 +24,17 @@ public:
 		{
 			writeChannelMap(defaultChannelMap);
 		}
-
-		return getChannelMap();
 	}
 
 	static void writeChannelMap(channelMap)
 	{
 		EEPROM.write(ADDR_VERSION, _softwareVersion);
 		EEPROM.put(ADDR_CHANNEL_MAP, channelMap);
+	}
+
+	static void writeChannelMapping(inputChannel, outputChannel)
+	{
+		EEPROM.write(CHANNEL_MAP_ADDR + inputChannel, outputChannel);
 	}
 
 	static void getChannelMap()

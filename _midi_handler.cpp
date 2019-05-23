@@ -138,6 +138,11 @@ public:
 		MIDI.turnThruOff();
 	}
 
+	static void update()
+	{
+		MIDI.read()
+	}
+
 	static bool isChannelActive(byte channel)
 	{
 		return active_map[channel];

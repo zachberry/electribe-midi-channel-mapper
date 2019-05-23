@@ -92,14 +92,14 @@ public:
 		writeNum(0, 0, 0, 0);
 	}
 
-	static void writeInputChannel(byte channelNum, bool dot)
+	static void updateInputChannel(byte channelNum, bool dot)
 	{
 		writeChannel(LEFT, channelNum, dot);
 	}
 
 	// NOTE: MIDI_CHANNEL_OFF is actually 17, but we want to display that
 	// on the LCD as "--".
-	static void writeOuputChannel(byte channelNum, bool dot)
+	static void updateOuputChannel(byte channelNum, bool dot)
 	{
 		if (val == MIDI_CHANNEL_OFF)
 		{
@@ -113,7 +113,7 @@ public:
 		writeChannel(RIGHT, channelNum, dot);
 	}
 
-	static void writeColon(bool colon)
+	static void setColon(bool colon)
 	{
 		matrix.drawColon(colon);
 	}
